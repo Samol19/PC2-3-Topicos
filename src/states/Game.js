@@ -71,8 +71,8 @@ class GameScene extends Phaser.Scene {
             D: Phaser.Input.Keyboard.KeyCodes.D
         });
 
-        //Generar enemigos (Remplazo para update)
-        this.time.addEvent({
+        // Generación de enemigos cada 2 segundos
+        this.enemySpawnEvent = this.time.addEvent({
             delay: this.enemySpawnInterval,
             callback: this.spawnEnemy,
             callbackScope: this,
@@ -133,7 +133,7 @@ class GameScene extends Phaser.Scene {
             this.score += 10;
             this.streak++;
     
-            // Si la racha de enemigos destruidos es 5, duplicamos el puntaje
+            // Si la racha de enemigos destruidos es 5, duplicamos el puntaje (En total sera 4 xd)
             if (this.streak === 5) {
                 this.score *= 2;
                 this.streak = 0;
@@ -146,7 +146,7 @@ class GameScene extends Phaser.Scene {
             this.scoreText.setText(`Puntaje: ${this.score}`);
             enemy.destroy();  // El enemigo debe destruirse aquí
         } else {
-            
+
             // Perder Vida
             this.lives--;
             this.livesText.setText(`Vidas: ${this.lives}`);
@@ -161,7 +161,59 @@ class GameScene extends Phaser.Scene {
     
 
     gameOver() {
-        this.scene.start('GameOverScene');
+        //Limpiar elementos del juego
+        this.enemyGroup.clear(true, true);
+        this.timeText.setVisible(false);  
+        this.scoreText.setVisible(false);
+        this.livesText.setVisible(false); 
+        this.time.removeEvent(this.enemySpawnEvent);
+
+
+
+        this.showGameOver();
+    }
+
+
+    showGameOver() {
+        // Crear el overlay (fondo oscuro transparente)
+        this.overlay = this.add.graphics();
+        this.overlay.fillStyle(0x000000, 1);
+        this.overlay.setAlpha(0);
+        this.overlay.fillRect(
+            0, 0,
+            this.game.config.width, this.game.config.height
+        );
+    
+        // Animación para mostrar el overlay
+        this.tweens.add({
+            targets: this.overlay,
+            alpha: 0.55,
+            duration: 500,
+            onComplete: () => {
+                let style = { font: '30px Arial', fill: '#fff' };
+                this.add.text(
+                    this.game.config.width / 2, this.game.config.height / 2 - 30,
+                    'YA ME FUI LA BIKA G_G AYUDAAAA', style
+                ).setOrigin(0.5);
+    
+                style = { font: '20px Arial', fill: '#fff' };
+                this.add.text(
+                    this.game.config.width / 2, this.game.config.height / 2 + 10,
+                    `Puntaje: ${this.score}`, style
+                ).setOrigin(0.5);
+    
+                this.add.text(
+                    this.game.config.width / 2, this.game.config.height / 2 + 50,
+                    'Haz clic para regresar al menú', style
+                ).setOrigin(0.5);
+    
+                this.input.once('pointerdown', this.restart, this);
+            }
+        });
+    }
+    
+    restart() {
+        this.scene.start('StartScene');
     }
 
 }

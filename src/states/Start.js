@@ -11,18 +11,24 @@ class StartScene extends Phaser.Scene {
         .setDisplaySize(this.game.config.width, this.game.config.height);
         // Texto "Bica 4 life G_G and forever"
         let titleText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY - 50, "Bica 4 life G_G and forever (gaaa)", {
-            fontSize: '32px',
-            fill: '#ffffff'
+            fontSize: '52px',
+            fill: '#ffffff',
+            stroke: '#000000',     // Color del contorno (negro)
+            strokeThickness: 6     // Grosor del contorno
         }).setOrigin(0.5);
 
         let studentText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 50, "Alumno: Fernando Samuel Paredes Espinoza", {
-            fontSize: '24px',
-            fill: '#ffffff'
+            fontSize: '34px',
+            fill: '#ffffff',
+            stroke: '#000000',     // Color del contorno (negro)
+            strokeThickness: 6     // Grosor del contorno
         }).setOrigin(0.5);
 
         let clickText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 100, "Haz clic para comenzar", {
-            fontSize: '18px',
-            fill: '#ffffff'
+            fontSize: '28px',
+            fill: '#ffffff',
+            stroke: '#000000',     // Color del contorno (negro)
+            strokeThickness: 6     // Grosor del contorno
         }).setOrigin(0.5);
 
         // Detectar clic en la pantalla para comenzar el juego
