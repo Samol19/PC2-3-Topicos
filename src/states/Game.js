@@ -12,6 +12,14 @@ class GameScene extends Phaser.Scene {
         this.currentTexture = 'player'; 
         this.PLAYER_SPEED = 5;
 
+
+        //Enemigo
+        this.ENEMY_SPEED= 200; 
+        this.enemySpawnInterval = 2000; // Apareciendo cada 2 segundos
+        this.enemyGroup = this.physics.add.group();
+        this.streak = 0;
+        this.lastDestroyedTexture = ''; 
+
     }
 
     create() {
@@ -27,7 +35,7 @@ class GameScene extends Phaser.Scene {
         });
 
         //TEXTO
-        this.scoreText = this.add.text(this.game.config.width - 150, 10, `Puntaje: ${this.score}`, {
+        this.scoreText = this.add.text(this.game.config.width - 200, 10, `Puntaje: ${this.score}`, {
             fontSize: '24px',
             fill: '#ffffff',
             fontStyle: 'bold'
@@ -52,7 +60,8 @@ class GameScene extends Phaser.Scene {
 
         //Jugador
         this.player = this.add.sprite(100, this.game.config.height / 2, 'player');
-
+        this.physics.world.enable(this.player);  // Activa las físicas para el jugador
+        this.player.body.setCollideWorldBounds(true);  // Evita que el jugador salga del mundo
 
         // Teclas para mover el personaje (WASD) y cambiar su textura
         this.cursors = this.input.keyboard.addKeys({
@@ -62,6 +71,15 @@ class GameScene extends Phaser.Scene {
             D: Phaser.Input.Keyboard.KeyCodes.D
         });
 
+        //Generar enemigos (Remplazo para update)
+        this.time.addEvent({
+            delay: this.enemySpawnInterval,
+            callback: this.spawnEnemy,
+            callbackScope: this,
+            loop: true
+        });
+
+        this.physics.add.overlap(this.player, this.enemyGroup, this.handleCollision, null, this);
 
     }
 
@@ -93,6 +111,59 @@ class GameScene extends Phaser.Scene {
         this.timeElapsed++;
         this.timeText.setText(`Tiempo: ${this.timeElapsed}`);
     }
+
+
+    spawnEnemy() {
+        const colors = ['amarillo', 'rojo', 'verde'];
+        const randomColor = Phaser.Utils.Array.GetRandom(colors);
+
+        const enemy = this.enemyGroup.create(this.game.config.width, Phaser.Math.Between(50, this.game.config.height - 50), randomColor);
+
+        this.physics.world.enable(enemy);
+        enemy.body.setAllowGravity(false);  
+        enemy.setVelocityX(-this.ENEMY_SPEED);
+        enemy.setScale(0.5);
+    }
+
+
+    handleCollision(player, enemy) {
+    
+        // Si el jugador y el enemigo tienen la misma textura, aumenta el puntaje
+        if (player.texture.key === enemy.texture.key) {
+            this.score += 10;
+            this.streak++;
+    
+            // Si la racha de enemigos destruidos es 5, duplicamos el puntaje
+            if (this.streak === 5) {
+                this.score *= 2;
+                this.streak = 0;
+            }
+            // Si la racha de enemigos destruidos es 3, multiplicamos el puntaje por 2
+            if (this.streak === 3) {
+                this.score *= 2;
+                this.streak = 0;
+            }
+            this.scoreText.setText(`Puntaje: ${this.score}`);
+            enemy.destroy();  // El enemigo debe destruirse aquí
+        } else {
+            
+            // Perder Vida
+            this.lives--;
+            this.livesText.setText(`Vidas: ${this.lives}`);
+            enemy.destroy(); // También destruir el enemigo si no coincide
+    
+            // Verificar si el jugador se queda sin vidas
+            if (this.lives <= 0) {
+                this.gameOver();
+            }
+        }
+    }
+    
+
+    gameOver() {
+        this.scene.start('GameOverScene');
+    }
+
 }
 
 export default GameScene;
