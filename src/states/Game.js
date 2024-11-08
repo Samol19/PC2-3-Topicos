@@ -23,6 +23,17 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+        // Verificar si la música de fondo ya está en ejecución
+        this.backgroundMusic = this.sound.get('backgroundMusic');
+        if (!this.backgroundMusic) {
+            this.backgroundMusic = this.sound.add('backgroundMusic');
+            this.backgroundMusic.play({
+                loop: true,
+                volume: 0.7
+            });
+        }
+
+
         this.add.image(0, 0, 'gameBackground')
             .setOrigin(0, 0)
             .setDisplaySize(this.game.config.width, this.game.config.height);
@@ -167,8 +178,13 @@ class GameScene extends Phaser.Scene {
         this.scoreText.setVisible(false);
         this.livesText.setVisible(false); 
         this.time.removeEvent(this.enemySpawnEvent);
-
-
+        if (this.backgroundMusic) {
+            this.backgroundMusic.stop();
+        }
+        this.gameOverMusic = this.sound.add('gameOverMusic');
+        this.gameOverMusic.play({
+            volume: 0.7   // Ajusta el volumen del "game over"
+        });
 
         this.showGameOver();
     }

@@ -15,6 +15,8 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('verde', 'assets/verde.png');
         this.load.image('gameBackground', 'assets/fondos/game.png');
         this.load.image('gameOver', 'assets/fondos/gam-over.jpg');
+        this.load.audio('backgroundMusic', 'assets/audio/backaudio.ogg');
+        this.load.audio('gameOverMusic', 'assets/audio/gameoveraudio.ogg');
     }
 
     create() {

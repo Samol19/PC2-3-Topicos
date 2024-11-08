@@ -9,6 +9,19 @@ class StartScene extends Phaser.Scene {
         this.add.image(0, 0, 'menuBackground')
         .setOrigin(0, 0)
         .setDisplaySize(this.game.config.width, this.game.config.height);
+
+        this.gameOverMusic = this.sound.get('gameOverMusic');
+        if (this.gameOverMusic) {
+            this.gameOverMusic.stop();
+        }
+
+        this.backgroundMusic = this.sound.add('backgroundMusic');
+        this.backgroundMusic.play({
+            loop: true,   // Repetir la música
+            volume: 0.7  // Ajustar volumen
+        });
+
+
         // Texto "Bica 4 life G_G and forever"
         let titleText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY - 50, "Bica 4 life G_G and forever (gaaa)", {
             fontSize: '52px',
